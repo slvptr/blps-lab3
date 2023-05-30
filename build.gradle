@@ -1,0 +1,41 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '2.7.8'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'war'
+}
+
+group = 'blps'
+version = '2.0'
+sourceCompatibility = "16"
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation "org.springframework.boot:spring-boot-starter-validation"
+	implementation "org.springframework.boot:spring-boot-starter-security"
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-activemq', version: '2.7.3'
+
+	implementation 'com.nimbusds:nimbus-jose-jwt:9.25.6'
+
+	compileOnly 'org.projectlombok:lombok:1.18.26'
+	compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '3.0.1'
+	annotationProcessor 'org.projectlombok:lombok:1.18.26'
+
+	runtimeOnly 'org.postgresql:postgresql'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+targetCompatibility = JavaVersion.VERSION_16
+
