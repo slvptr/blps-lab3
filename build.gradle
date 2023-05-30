@@ -20,6 +20,7 @@ dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-validation"
 	implementation "org.springframework.boot:spring-boot-starter-security"
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-activemq', version: '2.7.3'
+	implementation 'org.springframework.boot:spring-boot-starter-amqp:2.7.3'
 
 	implementation 'com.nimbusds:nimbus-jose-jwt:9.25.6'
 
@@ -31,6 +32,10 @@ dependencies {
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
+	implementation 'org.apache.qpid:qpid-jms-client:0.27.0'
+	implementation 'org.json:json:20230227'
+	implementation 'commons-validator:commons-validator:1.7'
 }
 
 tasks.named('test') {

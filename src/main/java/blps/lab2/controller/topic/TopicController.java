@@ -1,31 +1,36 @@
 package blps.lab2.controller.topic;
 
+import blps.lab2.controller.exceptions.InternalServerException;
 import blps.lab2.model.domain.topic.Topic;
 import blps.lab2.model.domain.topic.TopicCategory;
 import blps.lab2.model.domain.user.User;
 import blps.lab2.model.requests.topic.CreateTopicRequest;
 import blps.lab2.model.responses.topic.TopicView;
+import blps.lab2.producer.MessageProducer;
 import blps.lab2.service.topic.TopicService;
+import org.apache.commons.validator.GenericValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.jms.core.JmsTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.jms.JMSException;
 import javax.validation.Valid;
+import java.time.Instant;
 import java.util.*;
 
 @RestController
 @RequestMapping("api/v1/topic")
 public class TopicController {
     private final TopicService topicService;
-    private final JmsTemplate jmsTemplate;
+    private final MessageProducer messageProducer;
 
     @Autowired
-    public TopicController(TopicService topicService, JmsTemplate jmsTemplate) {
+    public TopicController(TopicService topicService, MessageProducer messageProducer) {
         this.topicService = topicService;
-        this.jmsTemplate = jmsTemplate;
+        this.messageProducer = messageProducer;
     }
 
     @GetMapping("/{id}")
@@ -62,7 +67,6 @@ public class TopicController {
     @PostMapping(value = "/", consumes = "application/json")
     public TopicView createTopic(@RequestBody @Valid CreateTopicRequest req ) {
         try {
-            jmsTemplate.convertAndSend("test-queue", req);
             Date currentDate = new Date();
             Topic topic = topicService.save(
                     new Topic(req.getTitle(),
@@ -77,6 +81,18 @@ public class TopicController {
             return TopicView.fromTopic(topic);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no such topic category");
+        }
+    }
+
+    @PostMapping(value = "/summary")
+    public ResponseEntity<?> generateSummary(
+            @RequestParam(value = "since", defaultValue = "", required = false) String date){
+        try {
+            Long.parseLong(date);
+            messageProducer.sendGenerateSummaryMessage(date);
+            return ResponseEntity.ok().build();
+        } catch (JMSException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 }

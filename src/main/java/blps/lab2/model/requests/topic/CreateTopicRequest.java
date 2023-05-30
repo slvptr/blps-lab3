@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.jms.Message;
 import java.io.Serializable;
 
 @Getter

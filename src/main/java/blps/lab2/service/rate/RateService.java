@@ -7,7 +7,6 @@ import blps.lab2.model.domain.topic.Topic;
 import blps.lab2.model.domain.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Optional;

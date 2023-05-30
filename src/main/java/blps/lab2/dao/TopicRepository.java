@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +26,9 @@ public interface TopicRepository extends JpaRepository<Topic, Long> {
             "OR UPPER(t.description) LIKE UPPER(concat('%', :query, '%'))" +
             "OR UPPER(t.content) LIKE UPPER(concat('%', :query, '%')))")
     Page<Topic> findByCategoryAndQuery(@Param("category") TopicCategory category, @Param("query") String query, Pageable pageable);
+
+    @Query("SELECT t FROM Topic t WHERE t.createdAt > :date")
+    List<Topic> findAllSince(@Param("date") Date date);
 
     Optional<Topic> findById(long id);
 }

@@ -1,11 +1,19 @@
 package blps.lab2.service.topic;
 
+import blps.lab2.consumer.MessageConsumer;
 import blps.lab2.model.domain.topic.Topic;
 import blps.lab2.dao.TopicRepository;
 import blps.lab2.model.domain.topic.TopicCategory;
 import blps.lab2.model.requests.topic.CreateTopicRequest;
 import blps.lab2.model.responses.topic.TopicView;
 import blps.lab2.model.responses.topic.TopicViewPage;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.nimbusds.jose.shaded.gson.JsonObject;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,12 +21,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class TopicService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageConsumer.class);
     private final TopicRepository topicRepository;
     @Autowired
     public TopicService(TopicRepository topicRepository) {
@@ -95,5 +107,17 @@ public class TopicService {
                 pageableTopics.getTotalPages(),
                 pageableTopics.isLast()
         );
+    }
+
+    public void generateSummary(Long dateInEpochMillis) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            List<Topic> topicList = topicRepository.findAllSince(new Date(dateInEpochMillis));
+            String filename = String.format("summary-%d.json", (new Date()).getTime());
+
+            mapper.writeValue(new File("summaries/" + filename), topicList);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+        }
     }
 }

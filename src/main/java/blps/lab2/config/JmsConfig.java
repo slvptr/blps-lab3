@@ -19,7 +19,7 @@ public class JmsConfig {
                 = new DefaultJmsListenerContainerFactory();
 
         factory.setConnectionFactory(connectionFactory);
-        factory.setConcurrency("5-10");
+        factory.setConcurrency("1");
 
         return factory;
     }
